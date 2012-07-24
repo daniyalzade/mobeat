@@ -1,0 +1,11 @@
+.dot {
+    display: inline-block;
+    margin-left: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    background-color: #8999A6;
+}
+.dot .active {
+    background-color: white;
+}
