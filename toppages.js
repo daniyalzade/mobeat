@@ -55,3 +55,15 @@ EngagedPages.prototype.getFields = function() {
 EngagedPages.prototype.init = function() {
   return false;
 }
+
+SocialPages.prototype = new Toppages();
+function SocialPages(host, apikey, domObj){
+    Toppages.call(this, host, apikey, domObj);
+}
+SocialPages.prototype.getFields = function() {
+  return 'social';
+}
+
+SocialPages.prototype.init = function() {
+  return false;
+}

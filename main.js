@@ -99,6 +99,7 @@ function instanceGetter(fields) {
 pages = {
   'toppages': Toppages,
   'engagement': EngagedPages,
+  'social': SocialPages,
 }
 
 function initPages() {
