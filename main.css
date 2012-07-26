@@ -1,11 +1,31 @@
 .dot {
-    display: inline-block;
-    margin-left: 6px;
-    width: 12px;
-    height: 12px;
-    border-radius: 6px;
-    background-color: #8999A6;
+  display: inline-block;
+  margin-left: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  background-color: #8999A6;
 }
-.dot .active {
-    background-color: white;
+.active {
+  background-color: white;
+}
+
+.footerContainer {
+  width: 30%;
+  margin: 0px auto;
+}
+
+.centered {
+  width: 50%;
+  margin: 0px auto;
+}
+
+.ui-select {
+  float: right;
+}
+
+.logo img {
+  height: 24px;
+  padding-left: 6px;
+  padding-top: 3px;
 }
