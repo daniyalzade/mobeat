@@ -19,10 +19,25 @@ function highlightCurPage(pageIdx) {
 
 function onSelectChange(e) {
   var val = $(this).val();
-  $('.lookbackSelect').each(function(i, v) {
+  var idx = 0;
+  $('.'+ e.target.className).each(function(i, v) {
+    $(v).find($("option")).attr('selected', false);
     $(v).find($("option")).filter(function() {
         return $(this).val() == val; 
     }).attr('selected', true);
+  });
+  try {
+    $('.'+ e.target.className).selectmenu('refresh', true);
+  } catch(e) {
+    /* This call fails if the view has not been initialized */
+  }
+  var updateHost = (e.target.className == 'domainsSelect');
+  $.each(pages, function(i, v) { 
+    var inst = v['inst'];
+    if (inst) {
+      updateHost ? inst.setHost(val) : inst.setLookback(val);
+    }
+    inst.refresh();
   });
 }
 
@@ -30,31 +45,42 @@ function createNav() {
   /* Add Headers */ 
   $(PAGE_SELECTOR).each(function(index, v) {
     $(v).append(
-      "<div class='ui-grid-a' data-role='header' data-position='fixed' data-id='header'> \
-      <div class='logo ui-block-a'></div> \
-      <div class='lookback ui-block-b'></div> \
+      "<div class='ui-grid-b' data-role='header' data-position='fixed' data-id='header'> \
+      <div class='domains ui-block-a'></div> \
+      <div class='ui-block-b'><div class='title centered'>Engagement</div></div> \
+      <div class='lookback ui-block-c'></div> \
       </div>");
-  });
-
-  var select = $("<select class='lookbackSelect'> \
-		<option value='1'>1 hour</option> \
-		<option value='2'>2 hours</option> \
-		<option value='12'>12 hours</option> \
-		<option value='24'>24 hours</option> \
-        </select>");
-  $('.lookback').append(select);
-  select.change(onSelectChange);
-  $('.logo').append('<img src="chartbeat-on-black-small.png">')
-  /* Add Footers */ 
-  $(PAGE_SELECTOR).each(function(i, v) {
-    var footer = $('<div data-role="footer" data-position="fixed" data-id="footer"></div>')
-    var footerContainer = $('<div class="footerContainer"></div>');
-    $(v).append(footer);
-    footer.append(footerContainer);
-    $(PAGE_SELECTOR).each(function(index, value) {
-      footerContainer.append('<span class="dot"></span>')
     });
-  });
+
+var domainsSelect = $("<div class='domainsSelectContainer'><select data-icon='false' data-mini='true' class='domainsSelect'> \
+          <option value='webrazzi.com'>webrazzi.com</option> \
+          <option value='techcrunch.com'>techcrunch.com</option> \
+          <option value='gizmodo.com'>gizmodo.com</option> \
+          <option value='nytimes.com'>nytimes.com</option> \
+          <option value='ted.com'>ted.com</option> \
+          <option value='someecards.com'>someecards.com</option> \
+</select></div>");
+    var select = $("<div class='lookbackSelectContainer'><select data-icon='false' data-mini='true' class='lookbackSelect'> \
+          <option value='1'>1 hour</option> \
+          <option value='2'>2 hours</option> \
+          <option value='12'>12 hours</option> \
+          <option value='24'>24 hours</option> \
+</select></div>");
+    console.log('subscribe to change', select, domainsSelect);
+    $('.domains').append(domainsSelect);
+    $('.lookback').append(select);
+
+    /* Add Footers */ 
+    $(PAGE_SELECTOR).each(function(i, v) {
+      var footer = $('<div data-role="footer" data-position="fixed" data-id="footer"></div>')
+      var footerContainer = $('<div class="footerContainer"></div>');
+      $(v).append(footer);
+      footer.append(footerContainer);
+      $(PAGE_SELECTOR).each(function(index, value) {
+        footerContainer.append('<span class="dot"></span>')
+      });
+    });
+    $('select').change(onSelectChange);
 }
 
 function getCurPageIdx() {
@@ -89,32 +115,44 @@ function attachNavEvents() {
   $(document).swipeleft(function() { changePage(true) });
 }
 
-/*
-function instanceGetter(fields) {
-  return function(domain, apikey, content) {
-    return new Toppages
-  }
-}
-*/
 pages = {
-  'toppages': Toppages,
-  'engagement': EngagedPages,
-  'social': SocialPages,
+  'toppages': {
+    'class': Toppages,
+    'inst': null
+  },
+  'engagement': {
+    'class': EngagedPages,
+    'inst': null
+  },
+  'social': {
+    'class': SocialPages,
+    'inst': null
+  }
 }
 
 function initPages() {
   $(PAGE_SELECTOR).each(function(i, v) { 
     var pageId = $(v).attr('id');
-    var pageClass = pages[pageId];
-    if (pageClass) {
-      console.log($(v));
-      var content = $($(v).find('[data-role=content]')[0]);
-      console.log(content);
-      var page = new pageClass('nytimes.com', '', content); 
-      page.refresh();
+    console.log(pageId, pages);
+    if (pages[pageId]) {
+      var pageClass = pages[pageId]['class'];
+      if (pageClass) {
+        var content = $($(v).find('[data-role=content]')[0]);
+        var host = $('select.domainsSelect option:selected').val() 
+        var lookback = $('select.lookbackSelect option:selected').val() 
+        var page = new pageClass(host, '', content); 
+        pages[pageId]['inst'] = page;
+        page.refresh();
+      }
     }
   });
 }
+
+function onDomains(domains) {
+  var domains = domains['domains'];
+  console.log(domains)
+}
+
 $(function() {
   createNav();
   highlightCurPage(getCurPageIdx());

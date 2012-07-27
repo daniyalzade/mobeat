@@ -20,12 +20,14 @@
   margin: 0px auto;
 }
 
-.ui-select {
-  float: right;
+.title {
+  padding-top: 5px;
 }
 
-.logo img {
-  height: 24px;
-  padding-left: 6px;
-  padding-top: 3px;
+.domainsSelectContainer {
+  float: left;
+}
+
+.lookbackSelectContainer {
+  float: right;
 }
